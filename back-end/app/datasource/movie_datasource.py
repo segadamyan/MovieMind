@@ -4,7 +4,7 @@ from datetime import datetime
 
 from sentence_transformers import SentenceTransformer
 
-from db.faissindex import FAISSIndex
+from app.db.faissindex import FAISSIndex
 
 
 
