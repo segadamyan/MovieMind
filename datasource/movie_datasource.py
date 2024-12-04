@@ -2,13 +2,11 @@ import os
 import requests
 from datetime import datetime
 
-import openai
 from sentence_transformers import SentenceTransformer
 
 from db.faissindex import FAISSIndex
 
 
-openai.api_key = ""
 
 class MovieDatasource:
     
