@@ -1,0 +1,82 @@
+<div class="min-h-screen bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center p-6">
+    <div class="max-w-4xl w-full bg-white rounded-lg shadow-lg overflow-hidden flex">
+      <!-- Sidebar -->
+      <div class="w-1/4 bg-gradient-to-br from-purple-700 to-indigo-700 text-white p-5">
+        <h2 class="text-2xl font-bold mb-4">Movie Mind Pro</h2>
+        <p class="mb-2">Welcome!, i am here to assist you.</p>
+        <h3 class="font-semibold mt-4">Suggestions:</h3>
+        <ul class="mt-2 space-y-2">
+          <li class="hover:underline cursor-pointer">What to watch now?</li>
+          <li class="hover:underline cursor-pointer">Tell me the best movies!</li>
+          <li class="hover:underline cursor-pointer">What is new today</li>
+        </ul>
+      </div>
+  
+      <!-- Chat Window -->
+      <div class="w-3/4 flex flex-col">
+        <!-- Chat Window -->
+        <div
+          class="flex-grow p-6 overflow-y-auto bg-gray-100"
+          id="chat-window"
+          style="max-height: 700px;"
+        >
+          <div *ngFor="let message of messages" class="mb-4">
+            <div
+              *ngIf="message.sender === 'user'"
+              class="flex justify-end items-center"
+            >
+              <div class="max-w-sm bg-blue-100 text-blue-700 rounded-lg p-3 shadow-md">
+                <p>{{ message.text }}</p>
+              </div>
+            </div>
+            <div
+              *ngIf="message.sender === 'bot'"
+              class="flex justify-start items-center"
+            >
+              <img
+                src="assets/chat-bot.png"
+                width="40"
+                alt="Bot Avatar"
+                class="mr-2 rounded-full"
+              />
+              <div class="max-w-sm bg-green-100 text-green-700 rounded-lg p-3 shadow-md">
+                <p>{{ message.text }}</p>
+              </div>
+            </div>
+          </div>
+      
+          <!-- Typing Indicator -->
+          <div *ngIf="typing" class="flex justify-start items-center">
+            <img
+              src="assets/chat-bot.png"
+              width="40"
+              alt="Bot Avatar"
+              class="mr-2 rounded-full"
+            />
+            <div class="animate-pulse bg-green-200 rounded-lg px-4 py-2">
+              Typing...
+            </div>
+          </div>
+        </div>
+      
+        <!-- Input Area -->
+        <div class="bg-white p-4 flex border-t">
+          <input
+            type="text"
+            [(ngModel)]="userInput"
+            placeholder="Type your message..."
+            class="flex-grow p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            (keyup.enter)="sendMessage()"
+          />
+          <button
+            (click)="sendMessage()"
+            class="ml-4 bg-purple-600 text-white px-5 py-3 rounded-lg hover:bg-purple-800 focus:outline-none"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  

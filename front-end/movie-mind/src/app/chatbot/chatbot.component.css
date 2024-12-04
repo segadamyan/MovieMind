@@ -1,0 +1,17 @@
+#chat-window {
+    max-height: 700px;
+    overflow-y: auto; 
+}
+  
+#chat-window::-webkit-scrollbar {
+    width: 8px;
+}
+
+#chat-window::-webkit-scrollbar-thumb {
+    background-color: #9f7aea;
+    border-radius: 10px;
+}
+
+#chat-window::-webkit-scrollbar-track {
+    background: #e5e7eb; 
+}
