@@ -4,9 +4,11 @@ import os
 from flask import Flask
 from flask_cors import CORS
 from flask_restful import Api
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 api = Api(app)
+socketio = SocketIO(app, cors_allowed_origins="*", manage_session=True)
 
 from app.config import ProductionConfig, DevelopmentConfig
 from flask_cors import CORS

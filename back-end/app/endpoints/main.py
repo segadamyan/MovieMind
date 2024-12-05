@@ -1,22 +1,40 @@
-from flask import request, jsonify
-from flask_restful import Resource
+from flask_socketio import  emit
+from flask import request
+
+
 from app.chatbot import MovieChatbot
-from app import app
+from app import app, socketio
 from app.datasource import MovieDatasource
 
-from app import api
+
+MOVIE_DATASOURCE = MovieDatasource(api_key=app.config.get("MOVIE_API_KEY"))
+BOT = MovieChatbot(openai_key=app.config.get("OPENAI_API_KEY"), movie_datasource=MOVIE_DATASOURCE)
+
+chat_histories = {}
+
+@socketio.on('connect')
+def handle_connect():
+    session_id = request.sid
+    chat_histories[session_id] = []
 
 
-class ChatBot(Resource):
-    MOVIE_DATASOURCE = MovieDatasource(api_key=app.config.get("MOVIE_API_KEY"))
-    MOVIE_DATASOURCE.update_movies(pages=1)
-    BOT = MovieChatbot(openai_key=app.config.get("OPENAI_API_KEY"), movie_datasource=MOVIE_DATASOURCE)
-    def get(self):
-        return jsonify({"message": "Hello, World!"})
-    
-    def post(self):
-        data = request.get_json()
-        response, search_result = ChatBot.BOT.chat(data.get("input"))
-        return jsonify({"message": response})
+@socketio.on('disconnect')
+def handle_disconnect():
+    session_id = request.sid
+    if session_id in chat_histories:
+        del chat_histories[session_id]
 
-api.add_resource(ChatBot, "/chatbot")
+
+@socketio.on('user_input')
+def handle_user_input(data):
+    session_id = request.sid
+    user_input = data.get('input')
+
+    chat_histories[session_id].append({"user": user_input})
+
+    response = BOT.chat_with_history(user_input, chat_histories[session_id])
+
+    chat_histories[session_id].append({"bot": response})
+
+    emit('message', {'message': response})
+

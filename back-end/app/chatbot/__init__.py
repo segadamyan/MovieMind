@@ -1,0 +1,1 @@
+from .moviemind import MovieChatbot
