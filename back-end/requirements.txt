@@ -3,3 +3,6 @@ Flask-Cors==5.0.0
 Flask-RESTful==0.3.10
 openai==1.55.3
 faiss-cpu==1.9.0
+flask-socketio==5.4.1
+requests==2.32.3
+psycopg2-binary==2.9.10

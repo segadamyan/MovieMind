@@ -76,8 +76,7 @@ class MovieDatasource:
         connection.commit()
         cursor.close()
         connection.close()
-
-    print("Movies saved to PostgreSQL and FAISS index successfully.")
+        print("Movies saved to PostgreSQL and FAISS index successfully.")
 
     def search_movie(self, query, k=5):
         """Searches for the k nearest neighbors to a query and returns full movie info."""
