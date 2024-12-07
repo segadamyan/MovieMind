@@ -1,0 +1,4 @@
+#Write docker-compose.yml file
+# version: '3.8'
+# must have services front-end and back-end
+# must have service for postrgesql database
