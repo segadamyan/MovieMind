@@ -107,9 +107,13 @@ class MovieDatasource:
     
     def search_movie(self, filters=None, order_by=None, limit=10, offset=0):
         """Searches for the k nearest neighbors to a query and returns full movie info."""
-        query = MovieQueryGenerator.generate_query(filters=filters, order_by=order_by, limit=limit, offset=offset)
-        results = MovieQueryGenerator.execute_query(query)
-        return results
+        if "order_by" in filters:
+            order_by = filters.pop("order_by")
+        if "order_direction" in filters:
+            order_by += " " + filters.pop("order_direction")
+        if "limit" in filters:
+            limit = filters.pop("limit")
+        return MovieQueryGenerator.get_movies(filters=filters, order_by=order_by, limit=limit, offset=offset)
 
 
     @classmethod

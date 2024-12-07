@@ -3,11 +3,10 @@ import json
 
 
 class MovieChatbot:
-    
     def __init__(self, openai_key=None, movie_datasource=None):
         self.datasource = movie_datasource
         self.client = OpenAI(api_key=openai_key)
-    
+
     def retrieve_relevant_movies(self, filters):
         results = self.datasource.search_movie(filters)
         return [self.format_movie_data(movie) for movie in results] if results else []
@@ -24,19 +23,29 @@ class MovieChatbot:
             "adult": adult,
             "language": language
         }
-        
-    def generate_response(self, user_query, chat_history):
-        """Generate a response using both retrieved data and chat history."""
-        history_text = "\n".join(
-            [f"User: {entry['user']}" if 'user' in entry else f"Bot: {entry['bot']}" for entry in chat_history]
-        )
 
+    def format_bot_response(self, movies: list):
+        if not movies:
+            return "No movies found matching your criteria."
+        response = "Here are some movie recommendations:\n"
+        for movie in movies:
+            response += (
+                f"{movie['title']} (Released on {movie['release_date']})\n"
+                f"Rating: {movie['vote_average']} | Popularity: {movie['popularity']}\n"
+                f"Overview: {movie['overview']}\n\n"
+            )
+        return response
+
+    def chat_with_history(self, user_query, chat_history):
+        history_text = "\n".join(
+            [f"User: {entry['user']}" if 'user' in entry else f"Bot: {entry['bot']}" for entry in chat_history[-5:]]
+        )
         messages = [
             {"role": "system", "content": "You are a movie recommendation assistant!"},
             {"role": "user", "content": f"Answer based on the user's query: {user_query}."},
             {"role": "user", "content": f"Chat history: {history_text}"}
         ]
-        
+
         functions = [
             {
                 "name": "retrieve_relevant_movies",
@@ -50,6 +59,9 @@ class MovieChatbot:
                         "vote_average": {"type": "number", "description": "Average vote score of the movie."},
                         "adult": {"type": "boolean", "description": "Whether the movie is for adults only."},
                         "original_language": {"type": "string", "description": "Original language of the movie."},
+                        "order_by": {"type": "string", "enum": ["title", "release_date"], "description": "Oder by attribute."},
+                        "order_direction": {"type": "string", "enum": ["asc", "desc"], "description": "Oder by direction attribute."},
+                        "limit": {"type": "number", "description": "Limit the number of results."},
                     },
                     "required": []
                 }
@@ -60,19 +72,17 @@ class MovieChatbot:
             model="gpt-3.5-turbo",
             messages=messages,
             functions=functions,
-            function_call = 'auto'
+            function_call='auto'
         )
         response_msg = completion.choices[0].message
-        
+
         if response_msg.function_call:
-            function_called = response_msg.function_call.name
-            function_args = json.loads(response_msg.function_call.arguments)
-            return self.retrieve_relevant_movies(filters = function_args)
+            try:
+                function_called = response_msg.function_call.name
+                function_args = json.loads(response_msg.function_call.arguments)
+                movies = self.retrieve_relevant_movies(filters=function_args)
+                return self.format_bot_response(movies)
+            except Exception as e:
+                return f"Error processing function call: {str(e)}"
 
         return response_msg.content.strip()
-
-
-    def chat_with_history(self, user_query, chat_history):
-        """Determine whether to retrieve new movies or use history."""
-        return self.generate_response(user_query, chat_history)
-
