@@ -29,12 +29,12 @@ export class ChatbotComponent {
   
   private flattenMovieDetails(movie: any): string {
     return `
-      Title: ${movie.title} \n
-      Overview: ${movie.overview} \n
+      ${movie.title}: \n
+      ${movie.overview}: \n
       Release Date: ${new Date(movie.release_date).toLocaleDateString()} \n
       Popularity: ${movie.popularity} \n
       Vote Average: ${movie.vote_average} \n
-      Adult Content: ${movie.adult ? 'Yes' : 'No'} \n
+      Adult Content: ${movie.adult ? 'Yes' : 'No'}, 
       Language: ${movie.language || 'N/A'} \n
     `;
   }
