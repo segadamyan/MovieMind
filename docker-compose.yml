@@ -1,4 +1,44 @@
-#Write docker-compose.yml file
-# version: '3.8'
-# must have services front-end and back-end
-# must have service for postrgesql database
+version: '3.8'
+
+services:
+  back-end:
+    build: ./back-end
+    ports:
+      - 5000:5000
+    networks:
+      - app-network
+  front-end:
+    build: ./front-end/movie-mind
+    ports:
+      - 4200:4200
+    networks:
+      - app-network
+  nginx:
+    build: ./nginx 
+    ports:
+      - "80:80"
+    depends_on:
+      - front-end
+      - back-end
+    networks:
+      - app-network
+  
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: moviemind 
+    volumes:
+      - postgres_data:/var/lib/postgresql/data 
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
+    driver: bridge

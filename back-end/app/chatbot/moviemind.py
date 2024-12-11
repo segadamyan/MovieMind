@@ -75,8 +75,8 @@ class MovieChatbot:
             function_call='auto'
         )
         response_msg = completion.choices[0].message
-
         if response_msg.function_call:
+            print("Function call")
             try:
                 function_called = response_msg.function_call.name
                 function_args = json.loads(response_msg.function_call.arguments)
