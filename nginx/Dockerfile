@@ -1,3 +1,7 @@
-FROM nginx:latest
+# Task 2 - Dockerfile for nginx web server
 
-COPY ./nginx.conf /etc/nginx/nginx.conf
+# Here you must write Dockerfile for nginx web server
+# You can use any image from Docker Hub
+# You must expose port 80
+# You must copy nginx configuration file to the container
+# We right now devloping a web server which will be run on port 80, but you can add dummy ssl certificates and run it on port 443
