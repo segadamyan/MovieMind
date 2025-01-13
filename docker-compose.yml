@@ -1,7 +1,55 @@
 # Task 3 - Docker Compose
 
 # Write a docker-compose.yml file that will run the following services:
-# Write docker-compose.yml file
 # version: '3.8'
 # must have services front-end and back-end
 # must have service for postrgesql database
+
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./front-end/movie-mind
+    volumes:
+      - ./front-end:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "4200:4200"
+  
+  backend:
+    build: ./back-end
+    volumes:
+      - ./back-end:/app
+    environment:
+      - env=development
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+  
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - frontend
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=moviemind
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
