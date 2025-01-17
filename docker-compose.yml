@@ -9,15 +9,14 @@ version: '3.8'
 
 services:
   frontend:
-    build: 
-      context: ./front-end/movie-mind
+    build: ./front-end/movie-mind
     volumes:
-      - ./front-end:/app
+      - ./front-end/movie-mind:/app
       - /app/node_modules
-    environment:
-      - NODE_ENV=development
     ports:
       - "4200:4200"
+    networks:
+      - app-network
   
   backend:
     build: ./back-end
@@ -29,7 +28,9 @@ services:
       - "5000:5000"
     depends_on:
       - db
-  
+    networks:
+      - app-network
+
   nginx:
     build:
       context: ./nginx
@@ -39,17 +40,26 @@ services:
     depends_on:
       - frontend
       - backend
+    networks:
+      - app-network
 
   db:
-    image: postgres:15-alpine
+    image: postgres:latest
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
       - POSTGRES_DB=moviemind
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
+
+
+networks:
+  app-network:
+    driver: bridge
